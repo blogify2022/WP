@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
     profilePhoto: {
       type: String,
       default:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+        'https://res.cloudinary.com/dapgeo6cm/image/upload/v1650094086/maleAvatar_k3zdgg.png',
     },
     email: {
       type: String,
@@ -32,10 +32,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
+    // isBlocked: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     isAdmin: {
       type: Boolean,
       default: false,
@@ -44,17 +44,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["Admin", "Guest", "Blogger"],
     },
-    isFollowing: {
-      type: Boolean,
-      default: false,
-    },
-    isUnFollowing: {
-      type: Boolean,
-      default: false,
-    },
-    isAccountVerified: { type: Boolean, default: false },
-    accountVerificationToken: String,
-    accountVerificationTokenExpires: Date,
 
     viewedBy: {
       type: [
@@ -64,32 +53,7 @@ const userSchema = new mongoose.Schema(
         },
       ],
     },
-
-    followers: {
-      type: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      ],
     },
-    following: {
-      type: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      ],
-    },
-    passwordChangeAt: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-
-    active: {
-      type: Boolean,
-      default: false,
-    },
-  },
   {
     toJSON: {
       virtuals: true,
@@ -109,10 +73,10 @@ userSchema.virtual("posts", {
 });
 
 //Account Type
-userSchema.virtual("accountType").get(function () {
-  const totalFollowers = this.followers?.length;
-  return totalFollowers >= 1 ? "Pro Account" : "Starter Account";
-});
+// userSchema.virtual("accountType").get(function () {
+//   const totalFollowers = this.followers?.length;
+//   return totalFollowers >= 1 ? "Pro Account" : "Starter Account";
+// });
 
 //Hash password
 userSchema.pre("save", async function (next) {
@@ -130,29 +94,29 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-//Verify account
-userSchema.methods.createAccountVerificationToken = async function () {
-  //create a token
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-  this.accountVerificationToken = crypto
-    .createHash("sha256")
-    .update(verificationToken)
-    .digest("hex");
-  this.accountVerificationTokenExpires = Date.now() + 30 * 60 * 1000; //10 minutes
-  return verificationToken;
-};
+// //Verify account
+// userSchema.methods.createAccountVerificationToken = async function () {
+//   //create a token
+//   const verificationToken = crypto.randomBytes(32).toString("hex");
+//   this.accountVerificationToken = crypto
+//     .createHash("sha256")
+//     .update(verificationToken)
+//     .digest("hex");
+//   this.accountVerificationTokenExpires = Date.now() + 30 * 60 * 1000; //10 minutes
+//   return verificationToken;
+// };
 
-//Password reset/forget
+// //Password reset/forget
 
-userSchema.methods.createPasswordResetToken = async function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  this.passwordResetToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-  this.passwordResetExpires = Date.now() + 30 * 60 * 1000; //10 minutes
-  return resetToken;
-};
+// userSchema.methods.createPasswordResetToken = async function () {
+//   const resetToken = crypto.randomBytes(32).toString("hex");
+//   this.passwordResetToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
+//   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; //10 minutes
+//   return resetToken;
+// };
 
 //Compile schema into model
 const User = mongoose.model("User", userSchema);
