@@ -1,1 +1,1 @@
-# blog-app-backend
+# blogify-app-backend

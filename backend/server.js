@@ -8,14 +8,16 @@ const { errorHandler, notFound } = require("./middlewares/error/errorHandler");
 const postRoute = require("./route/posts/postRoute");
 const commentRoutes = require("./route/comments/commentRoute");
 const categoryRoute = require("./route/category/categoryRoute");
+const path = require("path");
 
 const app = express();
 //DB
 dbConnect();
 
-app.get("/", (req, res) => {
-  res.json({ msg: "API for blog Application..." });
-});
+// app.get("/", (req, res) => {
+//   res.json({ msg: "API for blog Application..." });
+// });
+
 //Middleware
 app.use(express.json());
 //cors
@@ -36,4 +38,27 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server is running ${PORT}`));
 
-//
+//Heroku
+// __dirname = path.resolve();
+
+// if(process.env.NODE_ENV === 'production') {
+//   app.use(express.static(path.join(__dirname, "/frontend/build")));
+
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+//   });
+// } else {
+//     app.get("/", (req, res) => {
+//     res.json({ msg: "API for blog Application..." });
+//   });
+// }
+
+
+if(process.env.NODE_ENV == 'production') {
+  app.use(express.static("frontend/build"))
+  
+  // const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+  })
+}
